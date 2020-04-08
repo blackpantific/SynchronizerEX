@@ -22,7 +22,7 @@ namespace SynchronizerEX
     {
         public MainWindow()
         {
-            InitializeComponent();
+            InitializeComponent();//comment
         }
     }
 }
