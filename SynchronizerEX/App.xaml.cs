@@ -1,6 +1,7 @@
 ﻿using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Unity;
+using SynchronizerEX.Contracts;
 using SynchronizerEX.ViewModels;
 using SynchronizerEX.Views;
 using System;
@@ -20,16 +21,15 @@ namespace SynchronizerEX
     {
         protected override Window CreateShell()
         {
-            return Container.Resolve<WelcomePage>();            
+            return Container.Resolve<MainWindow>();            
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
+            //containerRegistry.RegisterForNavigation<WelcomePage, WelcomePageViewModel>();
+            containerRegistry.Register<INavigationService, WelcomePage>();
         }
-
-        protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
-        {
-            moduleCatalog.AddModule<ModuleNavigation>();
-        }
+        
+       
     }
 }

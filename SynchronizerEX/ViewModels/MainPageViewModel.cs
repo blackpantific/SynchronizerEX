@@ -7,11 +7,7 @@ using System.Threading.Tasks;
 
 namespace SynchronizerEX.ViewModels
 {
-    class MainPageViewModel : BindableBase
+    public class MainPageViewModel : BindableBase
     {
-        public MainPageViewModel()
-        {
-
-        }
     }
 }

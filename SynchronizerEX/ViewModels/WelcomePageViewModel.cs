@@ -1,8 +1,11 @@
 ﻿using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
+using SynchronizerEX.Contracts;
+using SynchronizerEX.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,27 +15,45 @@ namespace SynchronizerEX.ViewModels
 {
     class WelcomePageViewModel : BindableBase
     {
-        private IRegionManager _regionManager;
-        private DelegateCommand<string> _logInCommand;
-        public DelegateCommand<string> LogInCommand =>
-            _logInCommand ?? (_logInCommand = new DelegateCommand<string>(ExecuteLogInCommand));
+        private DelegateCommand _logInCommand;
+        public DelegateCommand LogInCommand =>
+            _logInCommand ?? (_logInCommand = new DelegateCommand(ExecuteLogInCommand));
 
+        private INavigationService _navigationService;
         
 
-        void ExecuteLogInCommand(string navigatePath)
+        void ExecuteLogInCommand()
         {
-            if(navigatePath != null)
-            {
-                _regionManager.RequestNavigate("WelcomePageRegion", navigatePath);
-            }
+            //var property_name = "PropToLogIn";
+            //var a = Properties.Settings.Default.Properties[property_name];
+            //SettingsProperty prop = null;
+
+            //if (Properties.Settings.Default.Properties[property_name] != null)
+            //{
+            //    prop = Properties.Settings.Default.Properties[property_name];
+
+            //}
+            //else
+            //{
+            //    prop = new System.Configuration.SettingsProperty(property_name);
+            //    prop.PropertyType = typeof(int);
+            //    Properties.Settings.Default.Properties.Add(prop);
+            //    Properties.Settings.Default.Save();
+
+            //}
+            //Properties.Settings.Default.Properties[property_name].DefaultValue = -1;
+            //Properties.Settings.Default.Save();
+
+            SettingsHelper.UserId = 1;
+
+
+
+            _navigationService.NavigateToMainPage();
         }
 
-
-
-        public WelcomePageViewModel(IRegionManager regionManager)
+        public WelcomePageViewModel(INavigationService navigationService)
         {
-            _regionManager = regionManager;
-           
+            _navigationService = navigationService;
         }
     }
 }

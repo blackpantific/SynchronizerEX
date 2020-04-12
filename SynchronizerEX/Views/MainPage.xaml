@@ -1,16 +1,104 @@
-﻿<Window x:Class="SynchronizerEX.Views.MainPage"
+﻿<Page x:Class="SynchronizerEX.Views.MainPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:SynchronizerEX.Views"
-      mc:Ignorable="d" 
       xmlns:prism="http://prismlibrary.com/"
       prism:ViewModelLocator.AutoWireViewModel="True"
-      WindowState="Maximized"
+      mc:Ignorable="d"
+      Background="White"
       Title="MainPage">
 
-    <Grid>
+    <StackPanel Orientation="Vertical">
+        <!--<Menu Height="20"
+              VerticalAlignment="Top">
+            <MenuItem Header="File">
+
+            </MenuItem>
+            <MenuItem Header="Edit">
+            </MenuItem>
+            <MenuItem Header="Tools">
+            </MenuItem>
+            <MenuItem Header="Language">
+            </MenuItem>
+            <MenuItem Header="Help">
+            </MenuItem>
+        </Menu>-->
+        <Grid Background="#f0f0f0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal"
+                        Grid.Row="0"
+                        Grid.Column="0">
+                <Button Content="Add files"
+                    Height="40"
+                    Width="60"
+                    Margin="8,12,12,12"/>
+                <Button Content="Tools"
+                    Height="40"
+                    Width="60"
+                        Margin="8,12,12,12"/>
+                <Button Content="Help"
+                    Height="40"
+                    Width="60"
+                        Margin="8,12,12,12"/>
+                
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal"
+                        Grid.Row="0"
+                        Grid.Column="1">
+                <Button Content="Synchronize"
+                    Height="40"
+                    Width="80"
+                        Margin="8,12,12,12"/>
+                <Button Content="Change User"
+                    Height="40"
+                    Width="80"
+                        Margin="8,12,12,12"/>
+            </StackPanel>
+            
+            
+        </Grid>
+
         
-    </Grid>
-</Window>
+        
+        <!--<Grid >
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+        </Grid>-->
+        <Grid>
+            <ListView x:Name="phonesList">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock FontSize="16" Text="{Binding Path=Title, Mode=OneWay}" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+            </ListView>
+        </Grid>
+    </StackPanel>
+
+    
+    
+    
+    
+</Page>

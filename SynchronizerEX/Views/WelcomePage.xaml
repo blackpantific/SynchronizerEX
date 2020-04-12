@@ -1,16 +1,15 @@
-﻿<Window x:Class="SynchronizerEX.Views.WelcomePage"
+﻿<Page x:Class="SynchronizerEX.Views.WelcomePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:SynchronizerEX.Views"
       xmlns:prism="http://prismlibrary.com/"
-      prism:ViewModelLocator.AutoWireViewModel="True"
       mc:Ignorable="d" 
-      WindowState="Maximized"
       Title="WelcomePage"
       Background="LightSkyBlue">
     <!--prism:RegionManager.RegionName="WelcomePageRegion"-->
+    <!--prism:ViewModelLocator.AutoWireViewModel="True"-->
     
     <Grid>
         <Grid.ColumnDefinitions>
@@ -36,14 +35,17 @@
                 Background="Transparent"
                 BorderThickness="0"
                 Cursor="Hand"
-                Command="{Binding LogInCommand}"
-                CommandParameter="MainPage">
+               
+                Command="{Binding LogInCommand}">
+            <!--
+             Click="Button_Click"
+            CommandParameter="MainPage"-->
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/SynchronizerEX;component/Resources/GButton.jpg" Cursor="Hand"/>
                 </StackPanel>
             </Button.Content>
         </Button>
-        <TabControl prism:RegionManager.RegionName="WelcomePageRegion" Margin="5"  />
+        
     </Grid>
-</Window>
+</Page>

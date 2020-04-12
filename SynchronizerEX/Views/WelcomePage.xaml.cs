@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SynchronizerEX.Contracts;
+using SynchronizerEX.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,11 +20,25 @@ namespace SynchronizerEX.Views
     /// <summary>
     /// Interaction logic for WelcomePage.xaml
     /// </summary>
-    public partial class WelcomePage : Window
+    public partial class WelcomePage : Page, INavigationService
     {
         public WelcomePage()
         {
             InitializeComponent();
+
+            DataContext = new WelcomePageViewModel(this);
+
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToMainPage();
+        }
+
+        public void NavigateToMainPage()
+        {
+            MainPage mp = new MainPage();
+            this.NavigationService.Navigate(mp);
         }
     }
 }
