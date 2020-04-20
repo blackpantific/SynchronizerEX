@@ -10,7 +10,7 @@ namespace SynchronizerEX.Helpers
 {
     public static class SettingsHelper
     {
-        public static int UserId 
+        public static int LogInSwitch 
         { 
             get 
             {
@@ -22,6 +22,20 @@ namespace SynchronizerEX.Helpers
                 Properties.Settings.Default.Save();
                 Properties.Settings.Default.Reload();
             } 
+        }
+
+        public static int WelcomeWindowSwitch
+        {
+            get
+            {
+                return Properties.Settings.Default.CanGreet;
+            }
+            set
+            {
+                Properties.Settings.Default.CanGreet = value;
+                Properties.Settings.Default.Save();
+                Properties.Settings.Default.Reload();
+            }
         }
 
     }

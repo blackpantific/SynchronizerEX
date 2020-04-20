@@ -4,13 +4,24 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:SynchronizerEX.Views"
-      xmlns:prism="http://prismlibrary.com/"
-      prism:ViewModelLocator.AutoWireViewModel="True"
       mc:Ignorable="d"
       Background="White"
       Title="MainPage">
+    <!--xmlns:prism="http://prismlibrary.com/"
+      prism:ViewModelLocator.AutoWireViewModel="True"-->
 
-    <StackPanel Orientation="Vertical">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+    
+    <StackPanel Orientation="Vertical"
+                Grid.Row="0"
+                Grid.Column="0">
         <!--<Menu Height="20"
               VerticalAlignment="Top">
             <MenuItem Header="File">
@@ -25,66 +36,85 @@
             <MenuItem Header="Help">
             </MenuItem>
         </Menu>-->
-        <Grid Background="#f0f0f0">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal"
+            <Grid Background="#f0f0f0">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal"
                         Grid.Row="0"
                         Grid.Column="0">
-                <Button Content="Add files"
+                    <Button Content="Add files"
                     Height="40"
                     Width="60"
-                    Margin="8,12,12,12"/>
-                <Button Content="Tools"
+                    Margin="8,12,12,12"
+                            Command="{Binding AddFilesCommand}"/>
+                    <Button Content="Tools"
+                            Command="{Binding ToolsCommand}"
                     Height="40"
                     Width="60"
                         Margin="8,12,12,12"/>
-                <Button Content="Help"
+                    <Button Content="Help"
                     Height="40"
                     Width="60"
                         Margin="8,12,12,12"/>
-                
-            </StackPanel>
 
-            <StackPanel Orientation="Horizontal"
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal"
                         Grid.Row="0"
                         Grid.Column="1">
-                <Button Content="Synchronize"
+                    <Button Content="Synchronize"
                     Height="40"
                     Width="80"
                         Margin="8,12,12,12"/>
-                <Button Content="Change User"
+                    <Button Content="Change User"
                     Height="40"
                     Width="80"
                         Margin="8,12,12,12"/>
-            </StackPanel>
-            
-            
-        </Grid>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
 
-        
-        
-        <!--<Grid >
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-        </Grid>-->
-        <Grid>
-            <ListView x:Name="phonesList">
-                <ListView.ItemTemplate>
+        <Grid Grid.Row="1"
+              Grid.Column="0">
+            <ListView x:Name="phonesList"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      >
+                <ListView.Resources>
+                    <ContextMenu x:Key="ItemContextMenu">
+                        <MenuItem Header="Delete item"
+                                  Command="">
+                            <MenuItem.Icon>
+                                <Image Source="pack://application:,,,/SynchronizerEX;component/Resources/Rubbish_bin.png"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </ListView.Resources>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Setter Property="ContextMenu"
+                                Value="{StaticResource ItemContextMenu}"/>
+                    </Style>
+                    
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate >
                     <DataTemplate>
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock FontSize="16" Text="{Binding Path=Title, Mode=OneWay}" HorizontalAlignment="Center" />
+                        <StackPanel Orientation="Vertical"
+                                    Margin="16"
+                                    ToolTipService.InitialShowDelay="2000">
+                            <Image Source="{Binding Path=ImagePath, Mode=OneWay}" 
+                                   Width="100"
+                                   Height="100"
+                                   ToolTipService.InitialShowDelay="4000"/>
+                            <TextBlock FontSize="16" Text="{Binding Path=Title, Mode=OneWay}" HorizontalAlignment="Center" 
+                                       ToolTipService.InitialShowDelay="4000"/>
+                            <StackPanel.ToolTip>
+                                <ToolTip Content="FullName"/>
+                            </StackPanel.ToolTip>
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -93,12 +123,12 @@
                         <WrapPanel/>
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
+                
             </ListView>
         </Grid>
-    </StackPanel>
+    </Grid>
 
-    
-    
-    
-    
+
+
+
 </Page>

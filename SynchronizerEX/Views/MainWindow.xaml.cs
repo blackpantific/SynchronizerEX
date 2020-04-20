@@ -1,4 +1,5 @@
-﻿using SynchronizerEX.Helpers;
+﻿using SynchronizerEX.Contracts;
+using SynchronizerEX.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,19 +21,23 @@ namespace SynchronizerEX.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private IDialogService _dialogService;
+
+        public MainWindow(IDialogService dialogService)
         {
             InitializeComponent();
 
+            _dialogService = dialogService;
             
-            if(SettingsHelper.UserId == -1)
+            if(SettingsHelper.LogInSwitch == -1)
             {
-                WelcomePage wp = new WelcomePage();
+                WelcomePage wp = new WelcomePage(_dialogService);
                 this.ApplicationMainFrame.NavigationService.Navigate(wp);
+                SettingsHelper.LogInSwitch = 1;
             }
             else
             {
-                this.ApplicationMainFrame.NavigationService.Navigate(new MainPage());
+                this.ApplicationMainFrame.NavigationService.Navigate(new MainPage(_dialogService));
             }
                 
             

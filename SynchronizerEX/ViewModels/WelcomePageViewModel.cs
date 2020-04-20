@@ -44,7 +44,7 @@ namespace SynchronizerEX.ViewModels
             //Properties.Settings.Default.Properties[property_name].DefaultValue = -1;
             //Properties.Settings.Default.Save();
 
-            SettingsHelper.UserId = 1;
+            
 
 
 

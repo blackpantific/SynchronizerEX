@@ -2,6 +2,7 @@
 using Prism.Modularity;
 using Prism.Unity;
 using SynchronizerEX.Contracts;
+using SynchronizerEX.Services;
 using SynchronizerEX.ViewModels;
 using SynchronizerEX.Views;
 using System;
@@ -28,6 +29,8 @@ namespace SynchronizerEX
         {
             //containerRegistry.RegisterForNavigation<WelcomePage, WelcomePageViewModel>();
             containerRegistry.Register<INavigationService, WelcomePage>();
+            containerRegistry.Register<IToolWindowNavigation, MainPage>();
+            containerRegistry.Register<IDialogService, DialogService>();
         }
         
        

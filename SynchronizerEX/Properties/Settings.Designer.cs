@@ -34,5 +34,17 @@ namespace SynchronizerEX.Properties {
                 this["CanNavigate"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public int CanGreet {
+            get {
+                return ((int)(this["CanGreet"]));
+            }
+            set {
+                this["CanGreet"] = value;
+            }
+        }
     }
 }
