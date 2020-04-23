@@ -18,7 +18,7 @@ namespace SynchronizerEX.ViewModels
 {
     public class MainPageViewModel : BindableBase
     {
-        public List<string> ListOfFilesToTrack { get; set; }
+    //    public List<string> ListOfFilesToTrack { get; set; }
 
         private DelegateCommand _toolsCommand;
         public DelegateCommand ToolsCommand =>
@@ -34,30 +34,35 @@ namespace SynchronizerEX.ViewModels
             var result = _dialogService.SelectFolder();
             if (Directory.Exists(result))
             {
-                DirectoryInfo directoryInfo = new DirectoryInfo(result);
+                //DirectoryInfo directoryInfo = new DirectoryInfo(result);
 
-                foreach (var item in directoryInfo.GetFiles())
-                {
-                    ListOfFilesToTrack.Add(item.FullName);
-                }
+                //foreach (var item in directoryInfo.GetFiles())
+                //{
+                //    ListOfFilesToTrack.Add(item.FullName);
+                //}
+
+
+                _watcherService.CreateWatcher(result);
             }
-
         }
-
+             
         private IToolWindowNavigation _toolWindowNavigation;
         private IDialogService _dialogService;
+        private IFileWatcherService _watcherService;
 
         void ExecuteToolsCommand()
         {
             _toolWindowNavigation.NavigateToToolWindow();
         }
 
-        public MainPageViewModel(IToolWindowNavigation toolWindowNavigation, IDialogService dialogService)
+        public MainPageViewModel(IToolWindowNavigation toolWindowNavigation, IDialogService dialogService,
+            IFileWatcherService watcherService)
         {
             _toolWindowNavigation = toolWindowNavigation;
             _dialogService = dialogService;
+            _watcherService = watcherService;
 
-            ListOfFilesToTrack = new List<string>();
+            //ListOfFilesToTrack = new List<string>();
 
         }
 

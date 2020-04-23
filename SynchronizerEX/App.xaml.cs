@@ -31,6 +31,7 @@ namespace SynchronizerEX
             containerRegistry.Register<INavigationService, WelcomePage>();
             containerRegistry.Register<IToolWindowNavigation, MainPage>();
             containerRegistry.Register<IDialogService, DialogService>();
+            containerRegistry.Register<IFileWatcherService, FileWatcherService>();
         }
         
        

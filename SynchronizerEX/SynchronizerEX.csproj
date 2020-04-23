@@ -104,13 +104,17 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Contracts\IDialogService.cs" />
+    <Compile Include="Contracts\IFileWatcherService.cs" />
     <Compile Include="Contracts\INavigationService.cs" />
     <Compile Include="Contracts\IToolWindowNavigation.cs" />
     <Compile Include="Helpers\IconHelper.cs" />
     <Compile Include="Helpers\SettingsHelper.cs" />
     <Compile Include="Helpers\ViewHandlerHelper.cs" />
+    <Compile Include="Model\SynchronizerFileInfo.cs" />
+    <Compile Include="Model\FileInformationToSynchronize.cs" />
     <Compile Include="Model\RaiseWindowMessage.cs" />
     <Compile Include="Services\DialogService.cs" />
+    <Compile Include="Services\FileWatcherService.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />
     <Compile Include="ViewModels\ToolsWindowViewModel.cs" />
     <Compile Include="ViewModels\WelcomePageViewModel.cs" />

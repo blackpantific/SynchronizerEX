@@ -28,19 +28,22 @@ namespace SynchronizerEX.Views
         //using loaded instead of OnNavigatingTo
         public ToolsWindow tw;
         private IDialogService _dialogService;
+        private IFileWatcherService _watcherService;
 
         public ObservableCollection<Phone> Phones { get; set; }
 
         
 
-        public MainPage(IDialogService dialogService)
+        public MainPage(IDialogService dialogService, IFileWatcherService watcherService)
         {
             InitializeComponent();
             this.Loaded += MainWindow_Loaded;
 
             _dialogService = dialogService;
-            DataContext = new MainPageViewModel(this, _dialogService);
+            _watcherService = watcherService;
+            DataContext = new MainPageViewModel(this, _dialogService, _watcherService);
 
+            
 
             Phones = new ObservableCollection<Phone>
         {

@@ -22,22 +22,25 @@ namespace SynchronizerEX.Views
     public partial class MainWindow : Window
     {
         private IDialogService _dialogService;
+        private IFileWatcherService _watcherService;
 
-        public MainWindow(IDialogService dialogService)
+
+        public MainWindow(IDialogService dialogService, IFileWatcherService watcherService)
         {
             InitializeComponent();
 
             _dialogService = dialogService;
+            _watcherService = watcherService;
             
             if(SettingsHelper.LogInSwitch == -1)
             {
-                WelcomePage wp = new WelcomePage(_dialogService);
+                WelcomePage wp = new WelcomePage(_dialogService, _watcherService);
                 this.ApplicationMainFrame.NavigationService.Navigate(wp);
                 SettingsHelper.LogInSwitch = 1;
             }
             else
             {
-                this.ApplicationMainFrame.NavigationService.Navigate(new MainPage(_dialogService));
+                this.ApplicationMainFrame.NavigationService.Navigate(new MainPage(_dialogService, _watcherService));
             }
                 
             

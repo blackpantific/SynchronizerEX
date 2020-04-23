@@ -23,10 +23,12 @@ namespace SynchronizerEX.Views
     public partial class WelcomePage : Page, INavigationService
     {
         private IDialogService _dialogService;
-        public WelcomePage(IDialogService dialogService)
+        private IFileWatcherService _watcherService;
+        public WelcomePage(IDialogService dialogService, IFileWatcherService watcherService)
         {
             InitializeComponent();
             _dialogService = dialogService;
+            _watcherService = watcherService;
             DataContext = new WelcomePageViewModel(this);
 
         }
@@ -38,7 +40,7 @@ namespace SynchronizerEX.Views
 
         public void NavigateToMainPage()
         {
-            MainPage mp = new MainPage(_dialogService);
+            MainPage mp = new MainPage(_dialogService, _watcherService);
             this.NavigationService.Navigate(mp);
         }
     }
