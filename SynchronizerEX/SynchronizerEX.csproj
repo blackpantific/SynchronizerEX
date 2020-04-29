@@ -110,6 +110,7 @@
     <Compile Include="Helpers\IconHelper.cs" />
     <Compile Include="Helpers\SettingsHelper.cs" />
     <Compile Include="Helpers\ViewHandlerHelper.cs" />
+    <Compile Include="Model\ParentDirectoryInfo.cs" />
     <Compile Include="Model\SynchronizerFileInfo.cs" />
     <Compile Include="Model\FileInformationToSynchronize.cs" />
     <Compile Include="Model\RaiseWindowMessage.cs" />

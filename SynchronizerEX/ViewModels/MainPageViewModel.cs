@@ -18,8 +18,9 @@ namespace SynchronizerEX.ViewModels
 {
     public class MainPageViewModel : BindableBase
     {
-    //    public List<string> ListOfFilesToTrack { get; set; }
+        //    public List<string> ListOfFilesToTrack { get; set; }
 
+        //public static DirectoryInfo directory;
         private DelegateCommand _toolsCommand;
         public DelegateCommand ToolsCommand =>
             _toolsCommand ?? (_toolsCommand = new DelegateCommand(ExecuteToolsCommand));
@@ -41,6 +42,8 @@ namespace SynchronizerEX.ViewModels
                 //    ListOfFilesToTrack.Add(item.FullName);
                 //}
 
+
+                //directory = new DirectoryInfo(result);//переработать, сделать список директорий
 
                 _watcherService.CreateWatcher(result);
             }

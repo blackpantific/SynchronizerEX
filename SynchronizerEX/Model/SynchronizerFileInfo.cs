@@ -8,14 +8,16 @@ namespace SynchronizerEX.Model
 {
     public class SynchronizerFileInfo
     {
-        public string FullPath { get; set; }
+        public string Path { get; set; }//если поменяется имя дериктории в контролируемой Watcher'ом директории и следовательно поменяется путь
         public DateTime LastSaveTime { get; set; } // файл был изменен
-        public int Hash { get; set; }
-        public SynchronizerFileInfo(string fullPath, DateTime lastSaveTime, int hash)
+        public string Hash { get; set; }
+        public int ParentFolderId { get; set; }
+        public SynchronizerFileInfo(string fullPath, DateTime lastSaveTime, string hash, int parentId)
         {
-            FullPath = fullPath;
+            Path = fullPath;
             LastSaveTime = lastSaveTime;
             Hash = hash;
+            ParentFolderId = parentId;
         }
     }
 }
