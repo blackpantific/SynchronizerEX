@@ -23,8 +23,12 @@ namespace SynchronizerEX.Services
 
         public void CreateWatcher(string path)
         {
+        //    ПРОТЕСТИРОВАТЬ РАБОТУ КЛАССА ПРИ ДОБАВЛЕНИИ ДЛЯ ОТСЛЕЖИВАНИЯ НЕСКОЛЬКИХ КАТАЛОГОВ
+        //        ДОРАБОТАТЬ ФУНКЦИОНАЛ МЕТОДОВ OnCreated(), OnDeleted 
+
+
             FileSystemWatcher watcher = new FileSystemWatcher(path);
-            watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName |
+            watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | 
                 NotifyFilters.DirectoryName;
             watcher.Filter = "*.*";
             
@@ -49,7 +53,6 @@ namespace SynchronizerEX.Services
         {
             try
             {
-
                 DirectoryInfo directoryInfo = new DirectoryInfo(sDir);
                 foreach (var item in directoryInfo.GetFiles())
                 {
@@ -61,10 +64,15 @@ namespace SynchronizerEX.Services
                             this.GetHashString(item.FullName),
                             parent.Id));
                     ListOfFilesInWatcherService.Add(file);
-                    //using (FileStream fs = File.Open(item.FullName, FileMode.Open, FileAccess.Read, FileShare.None))
-                    //{
 
-                    //}
+
+                    System.Timers.Timer timer = new System.Timers.Timer(10000);
+                    timer.Elapsed += (sender, e) => Timer_Elapsed(sender, e, file, item);
+                    timer.AutoReset = false;
+
+                    file.FileTimer = timer;
+
+                    timer.Enabled = true;
                 }
                 foreach (string d in Directory.GetDirectories(sDir))
                 {
@@ -76,6 +84,44 @@ namespace SynchronizerEX.Services
                 MessageBox.Show(excpt.Message);
             }
         }
+
+        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e, FileInformationToSynchronize toSynchronize,
+            FileInfo file)
+        {
+            var fileBusy = IsLocked(file.FullName);
+
+            if (fileBusy)
+            {
+                var timer = new System.Timers.Timer(30000);
+                timer.Elapsed += (sender1, e1) => Timer_Elapsed(sender, e, toSynchronize, file);
+                timer.AutoReset = false;
+                timer.Enabled = true;
+            }
+
+        }
+
+        public bool IsLocked(string fileName)
+        {
+            try
+            {
+                using (FileStream fs = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    fs.Close();
+
+                    //добавляем файл в стек на отправку
+
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                if (ex.HResult == -2147024894)
+                    return false;
+            }
+            return true;
+        }
+
 
         public string GetHashString(string pathToFile)
         {
@@ -177,6 +223,8 @@ namespace SynchronizerEX.Services
                 {
                     if (item.FileChangesHistory.LastOrDefault().Path == e.OldFullPath)
                     {
+                        item.FileTimer.Stop();
+
                         System.IO.FileInfo fileInfo = new System.IO.FileInfo(e.FullPath);
                         item.FileChangesHistory.Add(
                             new Model.SynchronizerFileInfo(
@@ -184,6 +232,9 @@ namespace SynchronizerEX.Services
                                 fileInfo.LastWriteTime,
                                 this.GetHashString(e.FullPath),
                                 item.ParentDirInfo.Id));
+
+                        item.FileTimer.Start();
+
                         break;
                     }
                 }
@@ -206,12 +257,18 @@ namespace SynchronizerEX.Services
             // FileAttributes file = File.GetAttributes(e.FullPath);
             //if (!file.HasFlag(FileAttributes.Hidden))
 
+            //ЗАМЕЧАНИЕ!
+            //    ПОКА ЧТО ОТСУТСТВУЕТ ВОЗМОЖНОСТЬ УДАЛЕНИЯ КАТАЛОГА И СЧИТЫВАНИЕ ВСЕХ ЕГО ВНУТРЕННИХ ФАЙЛОВ
+            //    ИЗ СПИСКА. ВЫПОЛНЯТЬ РАБОТУ ТОЛЬКО С ТЕКУЩИМИ ФАЙЛАМИ В КАТАЛОГЕ. ПОЗЖЕ ФУНКЦИОНАЛ ДОРАБОТАТЬ.
+
             foreach (var item in ListOfFilesInWatcherService)
             {
                 var trimPath = RelativePath(item.ParentDirInfo.DirectoryInfo.FullName, e.FullPath);
 
                 if (item.FileChangesHistory.LastOrDefault().Path == trimPath)
                 {
+                    item.FileTimer.Stop();
+                    item.FileTimer.Dispose();
                 //    System.IO.FileInfo fileInfo = new System.IO.FileInfo(e.FullPath);
                     item.FileChangesHistory.Add(
                         new Model.SynchronizerFileInfo("deleted", new DateTime(), String.Empty, -1));
@@ -225,6 +282,10 @@ namespace SynchronizerEX.Services
         {
             //FileAttributes file = File.GetAttributes(e.FullPath);
             //if (!file.HasFlag(FileAttributes.Hidden))
+
+            //ЗАМЕЧАНИЕ!
+            //    ПОКА ЧТО ОТСУТСТВУЕТ ВОЗМОЖНОСТЬ ДОБАВЛЕНИЯ КАТАЛОГА И СЧИТЫВАНИЕ ВСЕХ ЕГО ВНУТРЕННИХ ФАЙЛОВ
+            //    В СПИСОК. ВЫПОЛНЯТЬ РАБОТУ ТОЛЬКО С ТЕКУЩИМИ ФАЙЛАМИ В КАТАЛОГЕ. ПОЗЖЕ ФУНКЦИОНАЛ ДОРАБОТАТЬ.
 
             if (!Directory.Exists(e.FullPath))
             {
@@ -245,6 +306,16 @@ namespace SynchronizerEX.Services
                                     this.GetHashString(e.FullPath),
                                     item.Id));
                         ListOfFilesInWatcherService.Add(file);
+
+                        System.Timers.Timer timer = new System.Timers.Timer(10000);
+                        timer.Elapsed += (sender2, e2) => Timer_Elapsed(sender2, e2, file, fileInfo);
+                        timer.AutoReset = false;
+
+                        file.FileTimer = timer;
+
+                        timer.Enabled = true;
+
+
                         break;
                     }
                 }
@@ -261,19 +332,29 @@ namespace SynchronizerEX.Services
         {
             //FileAttributes file = File.GetAttributes(e.FullPath);
             //if (!file.HasFlag(FileAttributes.Hidden))
-            foreach (var item in ListOfFilesInWatcherService)
+
+            if (!Directory.Exists(e.FullPath))
             {
-                if (item.FileChangesHistory.LastOrDefault().Path == e.FullPath)
+
+                foreach (var item in ListOfFilesInWatcherService)
                 {
-                    
-                    System.IO.FileInfo fileInfo = new System.IO.FileInfo(e.FullPath);
-                    item.FileChangesHistory.Add(
-                        new Model.SynchronizerFileInfo(
-                            RelativePath(item.ParentDirInfo.DirectoryInfo.FullName, e.FullPath), 
-                            fileInfo.LastWriteTime,
-                            this.GetHashString(e.FullPath),
-                            item.ParentDirInfo.Id));
-                    break;
+                    if (item.FileChangesHistory.LastOrDefault().Path == e.FullPath)
+                    {
+
+                        item.FileTimer.Stop();
+
+
+                        System.IO.FileInfo fileInfo = new System.IO.FileInfo(e.FullPath);
+                        item.FileChangesHistory.Add(
+                            new Model.SynchronizerFileInfo(
+                                RelativePath(item.ParentDirInfo.DirectoryInfo.FullName, e.FullPath),
+                                fileInfo.LastWriteTime,
+                                this.GetHashString(e.FullPath),
+                                item.ParentDirInfo.Id));
+
+                        item.FileTimer.Start();
+                        break;
+                    }
                 }
             }
             System.Windows.MessageBox.Show($"Changed. File: {e.FullPath} {e.ChangeType}");
