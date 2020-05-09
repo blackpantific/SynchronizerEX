@@ -38,5 +38,20 @@ namespace SynchronizerEX.Helpers
             }
         }
 
+        public static int AutorunSwitch
+        {
+            get
+            {
+                return Properties.Settings.Default.CanAutorun;
+            }
+            set
+            {
+                Properties.Settings.Default.CanAutorun = value;
+                Properties.Settings.Default.Save();
+                Properties.Settings.Default.Reload();
+            }
+        }
+
+
     }
 }

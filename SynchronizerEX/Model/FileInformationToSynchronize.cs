@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,8 @@ namespace SynchronizerEX.Model
     {
         public List<SynchronizerFileInfo> FileChangesHistory { get; set; }
         public ParentDirectoryInfo ParentDirInfo { get; set; }
+
+        [JsonIgnore]
         public System.Timers.Timer FileTimer { get; set; }
         public FileInformationToSynchronize(ParentDirectoryInfo parentDirectoryInfo)
         {

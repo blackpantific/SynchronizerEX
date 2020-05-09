@@ -1,6 +1,8 @@
 ﻿using Prism.Commands;
 using Prism.Mvvm;
 using SynchronizerEX.Contracts;
+using SynchronizerEX.Helpers;
+using SynchronizerEX.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +34,16 @@ namespace SynchronizerEX.ViewModels
             {
                 DownloadFilesPath = _dialogService.DownloadFilesPath;
             }
+
+            if(SettingsHelper.AutorunSwitch == -1)
+            {
+                StartUpManager.AddApplicationToCurrentUserStartup();
+                SettingsHelper.AutorunSwitch = 1;
+            }
+
+
+
+
         }
 
 

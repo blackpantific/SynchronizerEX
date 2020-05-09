@@ -1,10 +1,13 @@
-﻿using SynchronizerEX.Contracts;
+﻿using Newtonsoft.Json;
+using SynchronizerEX.Contracts;
 using SynchronizerEX.Model;
 using SynchronizerEX.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Resources;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,31 +17,24 @@ namespace SynchronizerEX.Services
 {
     public class FileWatcherService : IFileWatcherService
     {
-        public List<FileInformationToSynchronize> ListOfFilesInWatcherService { get; set; }
-        public List<ParentDirectoryInfo> ParentDirectoryInfo { get; set; }
+        public static List<ParentDirectoryInfo> ParentDirectoryInfo { get; set; } = new List<ParentDirectoryInfo>();
+        public static List<FileInformationToSynchronize> ListOfFilesInWatcherService { get; set; } = new List<FileInformationToSynchronize>();
         public List<string> ListOfFilesReadyToSynchronize { get; set; }
         public List<string> ListOfFilesToRename { get; set; }
+
+        public static string workingDirectory = Environment.CurrentDirectory;
+        public static string projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;
+
 
         public static int ParentCatalogId { get; set; } = 0;
 
         public void CreateWatcher(string path)
         {
-        //    ПРОТЕСТИРОВАТЬ РАБОТУ КЛАССА ПРИ ДОБАВЛЕНИИ ДЛЯ ОТСЛЕЖИВАНИЯ НЕСКОЛЬКИХ КАТАЛОГОВ
-        //        ДОРАБОТАТЬ ФУНКЦИОНАЛ МЕТОДОВ OnCreated(), OnDeleted 
+            //    ПРОТЕСТИРОВАТЬ РАБОТУ КЛАССА ПРИ ДОБАВЛЕНИИ ДЛЯ ОТСЛЕЖИВАНИЯ НЕСКОЛЬКИХ КАТАЛОГОВ
+            //        ДОРАБОТАТЬ ФУНКЦИОНАЛ МЕТОДОВ OnCreated(), OnDeleted 
 
 
-            FileSystemWatcher watcher = new FileSystemWatcher(path);
-            watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | 
-                NotifyFilters.DirectoryName;
-            watcher.Filter = "*.*";
-            
-            watcher.Changed += new FileSystemEventHandler(OnChanged);
-            watcher.Created += new FileSystemEventHandler(OnCreated);
-            watcher.Deleted += new FileSystemEventHandler(OnDeleted);
-            watcher.Renamed += new RenamedEventHandler(OnRenamed);
-            watcher.IncludeSubdirectories = true;
-            watcher.EnableRaisingEvents = true;
-            
+            CreateWatcherObject(path);
 
             ParentCatalogId++;
 
@@ -48,6 +44,23 @@ namespace SynchronizerEX.Services
 
             DirSearch(parentDirObject, path);
         }
+
+        public void CreateWatcherObject(string path)
+        {
+
+            FileSystemWatcher watcher = new FileSystemWatcher(path);
+            watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName |
+                NotifyFilters.DirectoryName;
+            watcher.Filter = "*.*";
+
+            watcher.Changed += new FileSystemEventHandler(OnChanged);
+            watcher.Created += new FileSystemEventHandler(OnCreated);
+            watcher.Deleted += new FileSystemEventHandler(OnDeleted);
+            watcher.Renamed += new RenamedEventHandler(OnRenamed);
+            watcher.IncludeSubdirectories = true;
+            watcher.EnableRaisingEvents = true;
+        }
+
 
         private void DirSearch(ParentDirectoryInfo parent, string sDir)
         {
@@ -86,7 +99,7 @@ namespace SynchronizerEX.Services
         }
 
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e, FileInformationToSynchronize toSynchronize,
-            FileInfo file)
+            FileInfo file = null)
         {
             var fileBusy = IsLocked(file.FullName);
 
@@ -200,6 +213,8 @@ namespace SynchronizerEX.Services
                             {
                                 //System.IO.FileInfo fileInfo = new System.IO.FileInfo(item.FileChangesHistory.LastOrDefault().Path
                                 //    .Replace(trimmedString, e.Name));
+                                item.FileTimer.Stop();
+
                                 item.FileChangesHistory.Add(
                                     new Model.SynchronizerFileInfo(
                                        /* RelativePath(item.ParentDirInfo.DirectoryInfo.FullName, fileInfo.FullName)*/
@@ -207,6 +222,7 @@ namespace SynchronizerEX.Services
                                         item.FileChangesHistory.LastOrDefault().LastSaveTime,
                                         item.FileChangesHistory.LastOrDefault().Hash,
                                         item.ParentDirInfo.Id));
+                                item.FileTimer.Start();
                             }
                         }
                         break;
@@ -221,7 +237,7 @@ namespace SynchronizerEX.Services
             {
                 foreach (var item in ListOfFilesInWatcherService)
                 {
-                    if (item.FileChangesHistory.LastOrDefault().Path == e.OldFullPath)
+                    if (item.FileChangesHistory.LastOrDefault().Path.Contains(e.OldName)) 
                     {
                         item.FileTimer.Stop();
 
@@ -360,11 +376,113 @@ namespace SynchronizerEX.Services
             System.Windows.MessageBox.Show($"Changed. File: {e.FullPath} {e.ChangeType}");
         }
 
+        public void SerializeFileWatcherServiceData()
+        {
+            //var path = String.Format("{0}JsonData\\ParentDirectoryInfo.txt", AppDomain.CurrentDomain.);
+            //TextWriter textWriter = new StreamWriter("JsonData\\ParentDirectoryInfo.txt");
+
+            //using (StreamWriter stream = )
+
+            // or: Directory.GetCurrentDirectory() gives the same result
+
+            // This will get the current PROJECT directory
+
+            //FileStream fs = new FileStream(projectDirectory + "\\JsonData\\ParentDirectoryInfo.txt", FileMode.OpenOrCreate);
+            //fs.Close();
+
+
+
+            var listOfFiles = ListOfFilesInWatcherService.Select(item => {
+
+                var le = item.FileChangesHistory.LastOrDefault();
+
+                return new FileInformationToSynchronize(item.ParentDirInfo)
+                {
+
+                    FileChangesHistory = new List<SynchronizerFileInfo>()
+                    {
+                        new SynchronizerFileInfo(le.Path,
+                            le.LastSaveTime,
+                            le.Hash,
+                            le.ParentFolderId)
+                    }
+                };
+            });
+
+            var listToSerialize =new List<FileInformationToSynchronize>();
+            foreach (var item in listOfFiles)
+            {
+                listToSerialize.Add(item);
+            }
+
+
+            using (StreamWriter file = File.CreateText(projectDirectory + "\\JsonData\\ParentDirectoryInfo.json"))
+            {
+                file.WriteLine(JsonConvert.SerializeObject(ParentDirectoryInfo));
+            }
+
+            using (StreamWriter file = File.CreateText(projectDirectory + "\\JsonData\\ListOfFilesInWatcherService.json"))
+            {
+                //var listOfFiles = ListOfFilesInWatcherService.Select(item => new
+                //{
+                //    ParentDirectoryInfo = item.ParentDirInfo,
+                //    FileChangeHistory = item.FileChangesHistory.LastOrDefault()
+                //});
+
+
+                file.WriteLine(JsonConvert.SerializeObject(listToSerialize));
+
+
+
+
+            }
+
+        }
+        public void SerializeApplicationData() { }
+
+        public void DeserializeFileWatcherServiceData() 
+        {
+
+
+
+            using (StreamReader file = File.OpenText(projectDirectory + "\\JsonData\\ParentDirectoryInfo.json"))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                ParentDirectoryInfo = (List<ParentDirectoryInfo>)serializer.Deserialize(file, typeof(List<ParentDirectoryInfo>));
+            }
+
+            foreach (var item in ParentDirectoryInfo)
+            {
+                CreateWatcherObject(item.DirectoryInfo.FullName);
+            }
+
+            using (StreamReader file = File.OpenText(projectDirectory + "\\JsonData\\ListOfFilesInWatcherService.json"))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                ListOfFilesInWatcherService = (List<FileInformationToSynchronize>)serializer.Deserialize(file, typeof(List<FileInformationToSynchronize>));
+            }
+
+            foreach (var item in ListOfFilesInWatcherService)
+            {
+
+                System.Timers.Timer timer = new System.Timers.Timer(10000);
+                timer.Elapsed += (sender2, e2) => Timer_Elapsed(sender2, e2, item);
+                timer.AutoReset = false;
+
+                item.FileTimer = timer;
+
+            }
+
+
+        }
+        
+        public void DeserializeApplicationData() { }
+
+
+
 
         public FileWatcherService()
         {
-            ListOfFilesInWatcherService = new List<FileInformationToSynchronize>();
-            ParentDirectoryInfo = new List<ParentDirectoryInfo>();
         }
     }
 }

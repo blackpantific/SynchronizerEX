@@ -1,0 +1,5 @@
+Заметки
+
+https://www.codeproject.com/Articles/36468/WPF-NotifyIcon-2 - описание уже установленной в этом проекте либы для создания
+офигеннейшей иконки системного трея с полным функционалом, в будущем доработать
+http://www.hardcodet.net/wpf-notifyicon
